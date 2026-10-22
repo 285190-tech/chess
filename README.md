@@ -141,7 +141,7 @@ Serve the folder over HTTP (for example, `python3 -m http.server 8000`) rather t
 
 ### What has been verified
 
-The app was exercised headlessly — jsdom driving the real page script, backed by the real Stockfish build, one engine per process so instances cannot interfere — across 16 scenarios and 315 assertions, with no console errors in any of them:
+The app was exercised headlessly — jsdom driving the real page script, backed by the real Stockfish build, one engine per process so instances cannot interfere — across 22 scenarios and 421 assertions, with no console errors in any of them:
 
 - engine startup (`uci` → `uciok` → `isready` → `readyok`) and the ready/pending-start queue
 - a 12-ply watch game: history, move count, opening name, evaluation graph, `MultiPV` raised for the opening and dropped afterwards
@@ -159,6 +159,10 @@ The app was exercised headlessly — jsdom driving the real page script, backed 
 - game-over labels: checkmate, stalemate, insufficient material, fifty-move rule, repetition — plus that a finished position never triggers a search and that Start opens a fresh game
 - full games to completion (118-ply repetition draw, 53-ply draw, and earlier 194-ply checkmate with a rook underpromotion), each with a valid PGN and correct `Result`
 - preference save/restore including mode and side, and rejection of every invalid saved value
+- corrupt saved preferences: malformed JSON, a bare string, a number, a boolean, an array, `null`, an empty value and storage that throws on access all boot normally on the defaults
+- engine startup failure: a worker that cannot be created, a worker that reports an error (the usual symptom of a missing or mis-served `.wasm`), and opening the page from `file://` — each replaces the controls with a plain-language explanation, disables **Start**, and leaves the board rendered
+- PGN when the clipboard is blocked: the game is offered as a `.pgn` download with byte-identical contents, and when the download fails too the button says so, the failure is logged once, and the game carries on
+- reviewing a match that was paused by hand: leaving review does not silently restart it
 
 ## Open-source credits
 
