@@ -141,13 +141,14 @@ Serve the folder over HTTP (for example, `python3 -m http.server 8000`) rather t
 
 ### What has been verified
 
-The app was exercised headlessly — jsdom driving the real page script, backed by the real Stockfish build, one engine per process so instances cannot interfere — across 22 scenarios and 437 assertions, with no console errors in any of them:
+The app was exercised headlessly — jsdom driving the real page script, backed by the real Stockfish build, one engine per process so instances cannot interfere — across 23 scenarios and 450 assertions, with no console errors in any of them:
 
 - engine startup (`uci` → `uciok` → `isready` → `readyok`) and the ready/pending-start queue
 - a 12-ply watch game: history, move count, opening name, evaluation graph, `MultiPV` raised for the opening and dropped afterwards
 - variety on: consecutive games differ. Fixed line: two games in one engine session replay the same moves exactly
 - review: clicking a move shows that position, the arrow keys step, `Escape` returns to live, clicking the graph opens the matching ply, the match pauses and then resumes
 - strength: `UCI_LimitStrength` / `UCI_Elo` sent per engine and cached, correct `go depth`
+- a handicap match end to end: the limit follows the colour rather than the engine slot (swap the two strengths and limiting swaps sides too), and a full-strength engine beat the ≈ 1320-limited one by checkmate in 60 plies, with both ratings recorded in the PGN
 - time per move (`go movetime 500`) and the chess clock (`go wtime … btime … winc … binc …`): clocks count down for the side to move, the increment lands on the mover, and a flag fall stops the match with the right result and no further searches
 - series: colours swap, scoreboard and result pills match the games played, the badge advances, and the next game starts on its own from the initial position with a cleared hash
 - a whole series played to completion, unattended: both games finish, the final tally and summary are consistent with the results (a 1–1 series reads "Series drawn 1–1"), no search is requested once the series is over, and Start replays it from scratch
