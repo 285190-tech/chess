@@ -141,7 +141,7 @@ Serve the folder over HTTP (for example, `python3 -m http.server 8000`) rather t
 
 ### What has been verified
 
-The app was exercised headlessly — jsdom driving the real page script, backed by the real Stockfish build, one engine per process so instances cannot interfere — across 22 scenarios and 421 assertions, with no console errors in any of them:
+The app was exercised headlessly — jsdom driving the real page script, backed by the real Stockfish build, one engine per process so instances cannot interfere — across 22 scenarios and 437 assertions, with no console errors in any of them:
 
 - engine startup (`uci` → `uciok` → `isready` → `readyok`) and the ready/pending-start queue
 - a 12-ply watch game: history, move count, opening name, evaluation graph, `MultiPV` raised for the opening and dropped afterwards
@@ -154,7 +154,9 @@ The app was exercised headlessly — jsdom driving the real page script, backed 
 - play mode as White and as Black: the board flips, the engine opens, selection and target dots render, an illegal target only cancels the selection, the engine answers, and take-back removes both plies without letting the engine move again
 - play mode crossed with a saved chess-clock preference (a combination the watch UI cannot produce by clicking): the clock neither ticks nor displays, and the engine searches by depth instead of being handed an empty clock
 - review inside play mode: the board freezes on the position you clicked, squares and **Undo** are disabled, the engine does not move while you look back, and both the button (*↩ Back to board*) and `Escape` return you to a playable board
-- promotion: the picker opens on the last rank, `Escape` cancels it, and an underpromotion is recorded on the ply
+- promotion: the picker opens on the last rank, offers queen first plus all three underpromotions, `Escape` cancels it, and an underpromotion is recorded on the ply
+- flipping the board (button or `F`) is purely visual: the same 64 squares are present in reversed order, and flipping back restores the exact original order
+- play mode's own **New game** button resets the board while keeping your mode and your side
 - PGN export: clipboard write, headers reflecting mode/strength/round/search limit/variety, and a live game left byte-identical afterwards
 - game-over labels: checkmate, stalemate, insufficient material, fifty-move rule, repetition — plus that a finished position never triggers a search and that Start opens a fresh game
 - full games to completion (118-ply repetition draw, 53-ply draw, and earlier 194-ply checkmate with a rook underpromotion), each with a valid PGN and correct `Result`
