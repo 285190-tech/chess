@@ -141,7 +141,7 @@ Serve the folder over HTTP (for example, `python3 -m http.server 8000`) rather t
 
 ### What has been verified
 
-The app was exercised headlessly — jsdom driving the real page script, backed by the real Stockfish build, one engine per process so instances cannot interfere — across 14 scenarios and 249 assertions, with no console errors in any of them:
+The app was exercised headlessly — jsdom driving the real page script, backed by the real Stockfish build, one engine per process so instances cannot interfere — across 15 scenarios and 278 assertions, with no console errors in any of them:
 
 - engine startup (`uci` → `uciok` → `isready` → `readyok`) and the ready/pending-start queue
 - a 12-ply watch game: history, move count, opening name, evaluation graph, `MultiPV` raised for the opening and dropped afterwards
@@ -150,6 +150,7 @@ The app was exercised headlessly — jsdom driving the real page script, backed 
 - strength: `UCI_LimitStrength` / `UCI_Elo` sent per engine and cached, correct `go depth`
 - time per move (`go movetime 500`) and the chess clock (`go wtime … btime … winc … binc …`): clocks count down for the side to move, the increment lands on the mover, and a flag fall stops the match with the right result and no further searches
 - series: colours swap, scoreboard and result pills match the games played, the badge advances, and the next game starts on its own from the initial position with a cleared hash
+- a whole series played to completion, unattended: both games finish, the final tally and summary are consistent with the results (a 1–1 series reads "Series drawn 1–1"), no search is requested once the series is over, and Start replays it from scratch
 - play mode as White and as Black: the board flips, the engine opens, selection and target dots render, an illegal target only cancels the selection, the engine answers, and take-back removes both plies without letting the engine move again
 - promotion: the picker opens on the last rank, `Escape` cancels it, and an underpromotion is recorded on the ply
 - PGN export: clipboard write, headers reflecting mode/strength/round/search limit/variety, and a live game left byte-identical afterwards
