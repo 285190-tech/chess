@@ -139,9 +139,25 @@ Pages serves `.wasm` as `application/wasm`, which the engine needs for streaming
 
 Serve the folder over HTTP (for example, `python3 -m http.server 8000`) rather than opening `index.html` directly. The browser must be able to load the matching WASM file beside the worker, and a `file://` page blocks the worker entirely — the app says so instead of failing silently.
 
+### Running the tests
+
+The suite behind the results below lives in `tests/` and runs against the real `index.html` and the real Stockfish build — neither is mocked.
+
+```bash
+npm install                     # jsdom is the only dev dependency
+npm test                        # every scenario, about two minutes
+npm test -- boot watch review   # a subset
+```
+
+It exits non-zero if any check fails, so it drops straight into CI. Reports land in `tests/.reports/` (gitignored).
+
+Each scenario runs in its own process, and that is load-bearing rather than tidy: the Node build of `stockfish-19-lite-single.js` keeps one engine instance, one command queue and one listener per *process*, so two DOMs in a single process steal each other's `bestmove` output and the app reports phantom invalid moves. Real browser Workers are isolated, so this only ever affects the harness.
+
+jsdom cannot render, so visual layout is not covered — everything asserted is behaviour and DOM state.
+
 ### What has been verified
 
-The app was exercised headlessly — jsdom driving the real page script, backed by the real Stockfish build, one engine per process so instances cannot interfere — across 23 scenarios and 450 assertions, with no console errors in any of them:
+The app was exercised headlessly — jsdom driving the real page script, backed by the real Stockfish build, one engine per process so instances cannot interfere — across 23 scenarios and 456 assertions, with no console errors in any of them:
 
 - engine startup (`uci` → `uciok` → `isready` → `readyok`) and the ready/pending-start queue
 - a 12-ply watch game: history, move count, opening name, evaluation graph, `MultiPV` raised for the opening and dropped afterwards

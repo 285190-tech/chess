@@ -1,3 +1,6 @@
 # Agent scratch space
 .arena/
-.harness/
+
+# Test dependencies and generated reports
+node_modules/
+tests/.reports/
