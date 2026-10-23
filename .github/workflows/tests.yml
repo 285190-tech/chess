@@ -12,10 +12,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # jsdom 30 requires Node ^22.22.2 || ^24.15.0 || >=26.0.0
+      # jsdom 30 requires Node ^22.22.2 || ^24.15.0 || >=26.0.0.
+      # .node-version is read by Cloudflare Pages too, so CI and the deploy
+      # build image run the same Node.
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .node-version
           cache: npm
 
       - run: npm ci

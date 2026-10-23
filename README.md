@@ -135,6 +135,26 @@ Shortcuts are ignored while you are typing in a field or selecting an option.
 
 Pages serves `.wasm` as `application/wasm`, which the engine needs for streaming compilation. If you host it yourself, make sure your server sends that content type for `.wasm` or the engine will fail to start.
 
+## Publish with Cloudflare Pages
+
+Import the repository (**Workers & Pages → Create → Pages → Connect to Git**) and use:
+
+| Setting | Value |
+| --- | --- |
+| Production branch | see the note below |
+| Framework preset | None |
+| Build command | *(leave blank)* |
+| Build output directory | `/` |
+
+There is no build step — `index.html` plus the two engine files *are* the site. Pages serves `.wasm` as `application/wasm`, so streaming compilation works, and the engine is a single-threaded build with no `SharedArrayBuffer`, so it needs no cross-origin isolation headers. The worker path is resolved against `document.baseURI`, so the site also works if you later serve it from a subdirectory.
+
+**The production branch is the one thing that will actually break the import.** Pages deploys the branch you name as production and defaults to `main`, and all of this work currently lives on `arena/e81eacc0-chess` — `main` still holds only the original README and the un-unpacked `stockfish-arena.zip`, so accepting the default publishes an archive instead of the app. Either set the production branch to `arena/e81eacc0-chess`, or merge that branch into `main` first.
+
+Two details worth knowing:
+
+- Because the repo has a `package-lock.json`, Pages runs `npm ci` before deploying even when the build command is blank. That only installs the test harness, which the deployed site never touches, so set the build variable `SKIP_DEPENDENCY_INSTALL` to `true` (**Settings → Builds & deployments → Environment variables**) to skip it and cut roughly 30s from every deploy. Leaving it unset is harmless. `.node-version` pins Node 22.23.2 for that install, since the Pages build image defaults to 22.16.0 and jsdom 30 needs at least 22.22.2.
+- With the output directory at `/`, everything tracked at the root is published, including `tests/` and `package.json`; Pages excludes `node_modules`, `.git` and `.DS_Store` on its own. To serve only the three site files instead, set the build command to `mkdir -p dist && cp index.html stockfish-19-lite-single.js stockfish-19-lite-single.wasm dist/` and the output directory to `dist`.
+
 ## Local testing
 
 Serve the folder over HTTP (for example, `python3 -m http.server 8000`) rather than opening `index.html` directly. The browser must be able to load the matching WASM file beside the worker, and a `file://` page blocks the worker entirely — the app says so instead of failing silently.
