@@ -1,0 +1,15 @@
+{
+  "name": "engine-room",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Engine Room \u2014 a static chess app. Watch two Stockfish engines play each other, or play Stockfish yourself.",
+  "scripts": {
+    "test": "node tests/run-suite.cjs"
+  },
+  "devDependencies": {
+    "jsdom": "^30.1.3"
+  },
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+  }
+}

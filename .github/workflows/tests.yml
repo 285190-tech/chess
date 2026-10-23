@@ -1,0 +1,27 @@
+name: tests
+
+on:
+  push:
+    branches: [main, "arena/**"]
+  pull_request:
+
+jobs:
+  suite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      # jsdom 30 requires Node ^22.22.2 || ^24.15.0 || >=26.0.0.
+      # .node-version is read by Cloudflare Pages too, so CI and the deploy
+      # build image run the same Node.
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - run: npm ci
+
+      # 23 scenarios, one process each, driving the real page script against the
+      # real Stockfish build. Exits non-zero if any assertion fails.
+      - run: npm test
